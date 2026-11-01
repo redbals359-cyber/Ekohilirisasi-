@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pemantau Harga Beras Jatim - SISKAPERBAPO</title>
+    <!-- Menggunakan Tailwind CSS untukstyling modern -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans min-h-screen flex flex-col justify-between">
+
+    <!-- Header / Navbar -->
+    <header class="bg-emerald-600 text-white shadow-md">
+        <div class="max-w-4xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <i class="fa-solid fa-seedling text-2xl"></i>
+                <h1 class="text-xl font-bold">Pemantau Harga Beras Jatim</h1>
+            </div>
+            <span class="text-xs bg-emerald-700 px-3 py-1 rounded-full font-medium">SISKAPERBAPO</span>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-4xl mx-auto px-4 py-8 w-full flex-grow">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+            
+            <!-- Informasi & Tombol Refresh -->
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                <div>
+                    <h2 class="text-lg font-semibold text-gray-900">Daftar Harga Rata-Rata Beras</h2>
+                    <p class="text-xs text-gray-500 mt-0.5" id="last-updated">Terakhir diperbarui: -</p>
+                </div>
+                <button onclick="fetchHargaBeras()" id="refresh-btn" class="flex items-center gap-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-sm font-medium px-4 py-2 rounded-lg transition-colors border border-emerald-200">
+                    <i class="fa-solid fa-rotate-right" id="spinner-icon"></i> Muat Ulang
+                </button>
+            </div>
+
+            <!-- Konten Tabel / Status -->
+            <div id="content">
+                <!-- State Loading Awal -->
+                <div class="flex flex-col items-center justify-center py-12 text-gray-400">
+                    <i class="fa-solid fa-circle-notch fa-spin text-3xl text-emerald-600 mb-3"></i>
+                    <p class="text-sm">Mengambil data terbaru dari server...</p>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 py-4 text-center text-xs text-gray-500">
+        Sumber data resmi dari <a href="https://siskaperbapo.indagjatim.com/" target="_blank" class="text-emerald-600 hover:underline font-medium">SISKAPERBAPO Disperindag Jawa Timur</a>.
+    </footer>
+
+    <!-- JavaScript Client -->
+    <script>
+        const API_URL = 'http://localhost:3000/api/harga-beras';
+
+        async function fetchHargaBeras() {
+            const contentDiv = document.getElementById('content');
+            const refreshBtn = document.getElementById('refresh-btn');
+            const spinnerIcon = document.getElementById('spinner-icon');
+            
+            // Ubah tombol jadi loading state
+            refreshBtn.disabled = true;
+            spinnerIcon.classList.add('fa-spin');
+            
+            contentDiv.innerHTML = `
+                <div class="flex flex-col items-center justify-center py-12 text-gray-400">
+                    <i class="fa-solid fa-circle-notch fa-spin text-3xl text-emerald-600 mb-3"></i>
+                    <p class="text-sm">Menyinkronkan data harga beras...</p>
+                </div>
+            `;
+
+            try {
+                const response = await fetch(API_URL);
+                const result = await response.json();
+                
+                if (result.status === 'success' && result.data && result.data.length > 0) {
+                    let html = `
+                        <div class="overflow-x-auto rounded-lg border border-gray-200">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="bg-gray-100 text-gray-700 text-xs uppercase tracking-wider font-semibold">
+                                        <th class="py-3 px-4 border-b">Komoditas / Jenis Beras</th>
+                                        <th class="py-3 px-4 border-b">Harga Rata-Rata</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-200 text-sm">`;
+                    
+                    result.data.forEach((item, index) => {
+                        const bgRow = index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50';
+                        html += `
+                            <tr class="${bgRow} hover:bg-emerald-50/30 transition-colors">
+                                <td class="py-3 px-4 font-medium text-gray-900">${item.nama}</td>
+                                <td class="py-3 px-4 font-semibold text-emerald-600">${item.harga}</td>
+                            </tr>`;
+                    });
+                    
+                    html += `</tbody></table></div>`;
+                    contentDiv.innerHTML = html;
+
+                    // Update timestamp
+                    const now = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                    document.getElementById('last-updated').innerText = `Terakhir diperbarui: ${now} WIB`;
+
+                } else {
+                    contentDiv.innerHTML = `
+                        <div class="bg-amber-50 border border-amber-200 text-amber-800 p-4 rounded-lg text-sm text-center">
+                            <i class="fa-solid fa-triangle-exclamation mr-1"></i> Data beras tidak ditemukan atau format web sumber berubah.
+                        </div>`;
+                }
+            } catch (err) {
+                contentDiv.innerHTML = `
+                    <div class="bg-red-50 border border-red-200 text-red-700 p-4 rounded-lg text-sm text-center">
+                        <i class="fa-solid fa-circle-xmark mr-1"></i> Gagal terhubung ke server backend. Pastikan server Node.js sudah berjalan di <code>http://localhost:3000</code>.
+                    </div>`;
+            } finally {
+                refreshBtn.disabled = false;
+                spinnerIcon.classList.remove('fa-spin');
+            }
+        }
+
+        // Panggil fungsi saat halaman pertama kali dibuka
+        fetchHargaBeras();
+    </script>
+</body>
+</html>
