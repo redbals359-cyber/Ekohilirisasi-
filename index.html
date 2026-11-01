@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BioLoop - Platform Aggregator & Pricing Biomassa Sawit</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50 font-sans text-gray-800">
+
+    <!-- Header / Navbar -->
+    <header class="bg-emerald-700 text-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <i class="fa-solid fa-leaf text-2xl text-emerald-300"></i>
+                <span class="text-xl font-bold tracking-wide">BioLoop</span>
+            </div>
+            <nav class="hidden md:flex space-x-6 text-sm font-medium">
+                <a href="#dashboard" class="hover:text-emerald-200 transition">Indeks Harga</a>
+                <a href="#ai-analyzer" class="hover:text-emerald-200 transition">AI Quality Check</a>
+                <a href="#marketplace" class="hover:text-emerald-200 transition">Marketplace B2B</a>
+            </nav>
+            <span class="bg-emerald-800 text-emerald-200 text-xs px-3 py-1 rounded-full flex items-center gap-1">
+                <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span> Data Scraping Active
+            </span>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="max-w-7xl mx-auto px-4 py-8 space-y-8">
+
+        <!-- Hero Status Section -->
+        <section class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900">Pemantau Harga Harian Cangkang Sawit</h1>
+                <p class="text-gray-500 text-sm mt-1">
+                    Diperbarui otomatis dari agregator B2B (Indotrading, Indonetwork) & transaksi internal.
+                </p>
+            </div>
+            <div class="text-right">
+                <span class="text-xs text-gray-400 block">Terakhir Diperbarui</span>
+                <span class="text-sm font-semibold text-emerald-600" id="last-update">Hari Ini, 01:00 WIB</span>
+            </div>
+        </section>
+
+        <!-- KPI Cards Grid -->
+        <section class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <!-- Card 1: Harga Rata-Rata -->
+            <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100 border-l-4 border-l-emerald-600">
+                <span class="text-xs font-medium text-gray-400 uppercase">Rata-Rata Acuan</span>
+                <div class="text-2xl font-extrabold text-gray-900 mt-2">Rp 1.075 <span class="text-xs font-normal text-gray-500">/kg</span></div>
+                <div class="text-xs text-emerald-600 mt-2 flex items-center gap-1">
+                    <i class="fa-solid fa-arrow-trend-up"></i> +2.4% dari kemarin
+                </div>
+            </div>
+
+            <!-- Card 2: Rentang Pasar -->
+            <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100 border-l-4 border-l-blue-600">
+                <span class="text-xs font-medium text-gray-400 uppercase">Rentang Pasar (Spot)</span>
+                <div class="text-xl font-bold text-gray-900 mt-2">Rp 950 - Rp 1.200</div>
+                <div class="text-xs text-gray-500 mt-2">Berdasarkan 24 sampel terverifikasi</div>
+            </div>
+
+            <!-- Card 3: Volume Tersedia -->
+            <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100 border-l-4 border-l-amber-500">
+                <span class="text-xs font-medium text-gray-400 uppercase">Volume Terdaftar</span>
+                <div class="text-2xl font-extrabold text-gray-900 mt-2">450 <span class="text-xs font-normal text-gray-500">Ton</span></div>
+                <div class="text-xs text-gray-500 mt-2">Area Riau & Sumatera Utara</div>
+            </div>
+
+            <!-- Card 4: Reduksi Emisi -->
+            <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100 border-l-4 border-l-green-500">
+                <span class="text-xs font-medium text-gray-400 uppercase">Estimasi Carbon Avoided</span>
+                <div class="text-2xl font-extrabold text-gray-900 mt-2">832.5 <span class="text-xs font-normal text-gray-500">Kg CO₂e</span></div>
+                <div class="text-xs text-emerald-600 mt-2 flex items-center gap-1">
+                    <i class="fa-solid fa-leaf"></i> Sirkularitas Hijau
+                </div>
+            </div>
+        </section>
+
+        <!-- Dynamic Section: AI Quality Checker & Estimator -->
+        <section class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <!-- Algoritma Kalkulasi Harga Bersih (Form Interactive) -->
+            <div class="lg:col-span-2 bg-white rounded-2xl p-6 shadow-sm border border-gray-100 space-y-4">
+                <h2 class="text-lg font-bold text-gray-900 flex items-center gap-2">
+                    <i class="fa-solid fa-calculator text-emerald-600"></i> Kalkulator Harga Bersih Petani (Algorithmic Pricing)
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">Volume Limbah (Kg)</label>
+                        <input type="number" id="input-volume" value="5000" class="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">Kadar Air / Moisture Content (%)</label>
+                        <input type="number" id="input-moisture" value="15" class="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">Jarak Pengangkutan (Km)</label>
+                        <input type="number" id="input-distance" value="25" class="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">Kategori Kualitas (AI Assessment)</label>
+                        <select id="input-quality" class="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+                            <option value="1">Grade A (Bersih / Bebas Cangkang Pecah Halus)</option>
+                            <option value="0.95">Grade B (Tercampur Sedikit Serabut)</option>
+                            <option value="0.85">Grade C (Kadar Tanah / Kotor Tinggi)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="pt-4 border-t border-gray-100 flex flex-col md:flex-row justify-between items-center gap-4">
+                    <div>
+                        <span class="text-xs text-gray-400 block">Estimasi Penerimaan Net Petani</span>
+                        <span class="text-3xl font-extrabold text-emerald-700" id="net-price-result">Rp 4.725.000</span>
+                    </div>
+                    <button onclick="calculatePrice()" class="w-full md:w-auto bg-emerald-700 hover:bg-emerald-800 text-white font-medium px-6 py-3 rounded-xl transition shadow-sm text-sm">
+                        Hitung Ulang Harga
+                    </button>
+                </div>
+            </div>
+
+            <!-- Panel Live Source Listing Scraping -->
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 space-y-4">
+                <h3 class="text-md font-bold text-gray-900 flex items-center justify-between">
+                    <span>Sumber Listing Terdeteksi</span>
+                    <i class="fa-solid fa-database text-xs text-gray-400"></i>
+                </h3>
+                <div class="space-y-3 text-xs">
+                    <div class="p-3 bg-gray-50 rounded-lg border border-gray-100 space-y-1">
+                        <div class="font-semibold text-gray-800">Cangkang Sawit Ekspor Super</div>
+                        <div class="text-emerald-700 font-bold">Rp 1.150 / kg</div>
+                        <div class="text-gray-400 flex justify-between">
+                            <span>Sumber: Indotrading</span>
+                            <span>Kab. Pelalawan</span>
+                        </div>
+                    </div>
+                    <div class="p-3 bg-gray-50 rounded-lg border border-gray-100 space-y-1">
+                        <div class="font-semibold text-gray-800">Cangkang Sawit Curah PKS</div>
+                        <div class="text-emerald-700 font-bold">Rp 980 / kg</div>
+                        <div class="text-gray-400 flex justify-between">
+                            <span>Sumber: Indonetwork</span>
+                            <span>Musi Banyuasin</span>
+                        </div>
+                    </div>
+                    <div class="p-3 bg-gray-50 rounded-lg border border-gray-100 space-y-1">
+                        <div class="font-semibold text-gray-800">Cangkang Sawit Kering Oven</div>
+                        <div class="text-emerald-700 font-bold">Rp 1.200 / kg</div>
+                        <div class="text-gray-400 flex justify-between">
+                            <span>Sumber: Transaction Log</span>
+                            <span>Asahan, Sumut</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Simple Script untuk Simulasi Interaktif -->
+    <script>
+        function calculatePrice() {
+            const volume = parseFloat(document.getElementById('input-volume').value) || 0;
+            const moisture = parseFloat(document.getElementById('input-moisture').value) || 0;
+            const distance = parseFloat(document.getElementById('input-distance').value) || 0;
+            const qualityMultiplier = parseFloat(document.getElementById('input-quality').value) || 1;
+
+            const basePricePerKg = 1075;
+            
+            // Penalti Kadar Air > 12%
+            let moisturePenalty = 0;
+            if (moisture > 12) {
+                moisturePenalty = (moisture - 12) * 15; // Rp 15 per % kelebihan air
+            }
+
+            // Biaya Logistik (Rp 5 per kg per km)
+            const logisticsCostPerKg = distance * 5;
+
+            // Harga Final per Kg
+            let finalPricePerKg = (basePricePerKg * qualityMultiplier) - moisturePenalty - logisticsCostPerKg;
+            if (finalPricePerKg < 500) finalPricePerKg = 500; // Floor price minimum
+
+            const totalPrice = finalPricePerKg * volume;
+
+            document.getElementById('net-price-result').innerText = 'Rp ' + Math.round(totalPrice).toLocaleString('id-ID');
+        }
+    </script>
+</body>
+</html>
