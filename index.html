@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>GABAH MONITOR | Pantau Harga Gabah</title>
+
+<style>
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background: #f2f6ef;
+  color: #203326;
+  padding: 20px;
+}
+
+.container {
+  max-width: 950px;
+  margin: auto;
+}
+
+header {
+  background: #176b3a;
+  color: white;
+  padding: 28px;
+  border-radius: 18px;
+  margin-bottom: 20px;
+}
+
+header h1 {
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+
+header p {
+  line-height: 1.6;
+  color: #e1f2e5;
+}
+
+.panel {
+  background: white;
+  border-radius: 16px;
+  padding: 22px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 16px #183a1910;
+}
+
+.status {
+  margin-top: 12px;
+  color: #647469;
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.card {
+  background: white;
+  padding: 22px;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px #183a1910;
+}
+
+.label {
+  color: #6b7c6e;
+  font-size: 14px;
+  margin-bottom: 15px;
+}
+
+.value {
+  font-size: 28px;
+  font-weight: bold;
+  color: #176b3a;
+  overflow-wrap: anywhere;
+}
+
+.sub {
+  font-size: 13px;
+  margin-top: 10px;
+  color: #738075;
+}
+
+button {
+  background: #176b3a;
+  color: white;
+  border: none;
+  border-radius: 9px;
+  padding: 12px 16px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  margin-top: 15px;
+}
+
+button:hover {
+  background: #10552c;
+}
+
+.note {
+  font-size: 14px;
+  line-height: 1.7;
+  color: #526555;
+}
+
+a {
+  color: #176b3a;
+  overflow-wrap: anywhere;
+}
+
+footer {
+  text-align: center;
+  font-size: 12px;
+  color: #718072;
+  margin: 25px 0;
+  line-height: 1.8;
+}
+
+@media (max-width: 500px) {
+  body {
+    padding: 12px;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  header h1 {
+    font-size: 23px;
+  }
+}
+</style>
+</head>
+
+<body>
+<main class="container">
+
+<header>
+  <h1>🌾 GABAH MONITOR</h1>
+  <p>
+    Dashboard pemantauan harga gabah Indonesia.
+    Pantau informasi harga dan perubahan nilai
+    komoditas pertanian dari sumber yang tersedia.
+  </p>
+</header>
+
+<section class="panel">
+  <h2>📡 Status Pemantauan</h2>
+
+  <p class="status">
+    Status sumber data:
+    <strong id="status">Belum diperiksa</strong>
+    <br>
+
+    Jam perangkat:
+    <strong id="clock">--:--:--</strong>
+    <br>
+
+    Pembaruan terakhir dashboard:
+    <strong id="updated">Belum tersedia</strong>
+  </p>
+
+  <button onclick="checkSource()">
+    Buka Sumber Harga Resmi
+  </button>
+</section>
+
+<section class="grid">
+
+  <article class="card">
+    <div class="label">🌾 Harga Gabah Sekarang</div>
+    <div class="value" id="price">—</div>
+    <div class="sub">
+      Harga dari sumber resmi belum dihubungkan.
+    </div>
+  </article>
+
+  <article class="card">
+    <div class="label">📍 Wilayah Data</div>
+    <div class="value" id="region">—</div>
+    <div class="sub">
+      Wilayah mengikuti data sumber.
+    </div>
+  </article>
+
+  <article class="card">
+    <div class="label">💰 Harga Sebelumnya</div>
+    <div class="value" id="previous">—</div>
+    <div class="sub">
+      Harga pembanding dari sumber.
+    </div>
+  </article>
+
+  <article class="card">
+    <div class="label">📈 Perubahan Harga</div>
+    <div class="value" id="change">—</div>
+    <div class="sub">
+      Dihitung jika kedua nilai tersedia.
+    </div>
+  </article>
+
+</section>
+
+<section class="panel">
+  <h2>ℹ️ Tentang Data</h2>
+  <br>
+
+  <p class="note">
+    Website ini merupakan prototipe dashboard.
+    Angka harga tidak dibuat secara otomatis.
+    Agar harga benar-benar tampil, diperlukan
+    koneksi ke sumber data yang dapat diakses
+    secara terprogram.
+  </p>
+
+  <br>
+
+  <p class="note">
+    Sumber harga gabah:
+    <a href="https://infoharga.bappebti.go.id/"
+       target="_blank"
+       rel="noopener noreferrer">
+       Sistem Informasi Harga Komoditi BAPPEBTI
+    </a>
+  </p>
+
+  <p class="note">
+    Data statistik pembanding:
+    <a href="https://www.bps.go.id/"
+       target="_blank"
+       rel="noopener noreferrer">
+       Badan Pusat Statistik
+    </a>
+  </p>
+</section>
+
+<footer>
+  GABAH MONITOR — Dashboard informasi pertanian<br>
+  Jam dashboard berubah setiap detik.
+  Data harga berubah mengikuti pembaruan sumber.
+</footer>
+
+</main>
+
+<script>
+function updateClock() {
+  document.getElementById("clock").textContent =
+    new Date().toLocaleTimeString("id-ID", {
+      timeZone: "Asia/Jakarta",
+      hour12: false
+    });
+}
+
+function checkSource() {
+  window.open(
+    "https://infoharga.bappebti.go.id/",
+    "_blank",
+    "noopener,noreferrer"
+  );
+
+  document.getElementById("status").textContent =
+    "Silakan periksa data pada situs sumber";
+}
+
+updateClock();
+
+setInterval(updateClock, 1000);
+</script>
+
+</body>
+</html>
