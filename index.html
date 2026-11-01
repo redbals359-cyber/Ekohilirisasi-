@@ -1,0 +1,106 @@
+import re
+from statistics import mean
+import requests
+from bs4 import BeautifulSoup
+
+
+def scrape_indotrading_cangkang_sawit():
+    """Mengambil listing harga cangkang sawit dari platform B2B Indotrading."""
+    url = "https://www.indotrading.com/product/cangkang-sawit"
+    headers = {
+        "User-Agent": (
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) "
+            "Chrome/120.0.0.0 Safari/537.36"
+        )
+    }
+
+    try:
+        response = requests.get(url, headers=headers, timeout=10)
+        if response.status_code != 200:
+            print(f"Gagal mengakses situs. Status Code: {response.status_code}")
+            return []
+
+        soup = BeautifulSoup(response.text, "html.parser")
+        items = []
+
+        # Mencari kartu produk di halaman B2B
+        cards = soup.find_all("div", class_=re.compile(r"product|item", re.I))
+
+        for card in cards:
+            title_elem = card.find(
+                ["h2", "h3", "a"], class_=re.compile(r"title|name", re.I)
+            )
+            price_elem = card.find(
+                ["span", "div", "p"], class_=re.compile(r"price", re.I)
+            )
+
+            if title_elem and price_elem:
+                title = title_elem.text.strip()
+                price_text = price_elem.text.strip()
+
+                # Ekstraksi angka harga menggunakan Regex
+                numbers = re.findall(r"\d[\d.]*", price_text.replace(".", ""))
+                if numbers:
+                    price_val = float(numbers[0])
+                    # Filter outlier: harga cangkang sawit wajar berkisar Rp 500 - Rp 2.500 / kg
+                    if 500 <= price_val <= 2500:
+                        items.append(
+                            {
+                                "title": title,
+                                "price_per_kg": price_val,
+                                "source": "Indotrading (B2B Marketplace)",
+                            }
+                        )
+
+        return items
+
+    except Exception as e:
+        print(f"Terjadi kesalahan saat pengikisan data: {e}")
+        return []
+
+
+def calculate_daily_price_index(data_list):
+    """Menghitung harga acuan harian (Volume-Weighted / Trimmed Average) dari hasil scraping."""
+    if not data_list:
+        return None
+
+    prices = [item["price_per_kg"] for item in data_list]
+
+    # Menghitung harga minimum, maksimum, dan rata-rata harian
+    min_price = min(prices)
+    max_price = max(prices)
+    avg_price = mean(prices)
+
+    return {
+        "total_sample": len(prices),
+        "min_price": min_price,
+        "max_price": max_price,
+        "avg_price_today": round(avg_price, 2),
+    }
+
+
+# --- EKSEKUSI PEMANTAU HARGA ---
+if __name__ == "__main__":
+    print("=== BIOLOOP DAILY PRICE TRACKER ==")
+    scraped_data = scrape_indotrading_cangkang_sawit()
+
+    if scraped_data:
+        print(
+            f"\n[+] Berhasil mengambil {len(scraped_data)} listing valid harian."
+        )
+        for idx, item in enumerate(scraped_data[:5], 1):
+            print(
+                f"{idx}. {item['title']} -> Rp {item['price_per_kg']:,}/kg [{item['source']}]"
+            )
+
+        summary = calculate_daily_price_index(scraped_data)
+        print("\n--- INDEKS HARGA ACUAN BIOLOOP HARI INI ---")
+        print(f"Rentang Harga Pasar : Rp {summary['min_price']:,} - Rp {summary['max_price']:,} / kg")
+        print(
+            f"Rata-Rata Acuan     : Rp {summary['avg_price_today']:,} / kg"
+        )
+    else:
+        print(
+            "[-] Data listing tidak ditemukan atau struktur HTML telah berubah."
+        )
